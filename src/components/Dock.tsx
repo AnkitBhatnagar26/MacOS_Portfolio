@@ -1,17 +1,19 @@
 import { dockApps } from "#constants";
+import useWindowStore, { type WindowKey } from "#store/window";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useRef } from "react";
 import { Tooltip } from "react-tooltip";
 
 type DockApp = {
-  id: string;
+  id: WindowKey;
   name: string;
   icon: string;
   canOpen: boolean;
 };
 
 const Dock = () => {
+  const { openWindow, closeWindow, windows } = useWindowStore();
   const dockRef = useRef<HTMLDivElement | null>(null);
 
   useGSAP(() => {
@@ -70,7 +72,16 @@ const Dock = () => {
     id: DockApp["id"];
     canOpen: DockApp["canOpen"];
   }) => {
-    // implement later
+    if (!app.canOpen) return;
+    const window = windows[app.id];
+
+    if (window.isOpen) {
+      closeWindow(app.id);
+    } else {
+      openWindow(app.id);
+    }
+
+    console.log(windows);
   };
 
   return (
